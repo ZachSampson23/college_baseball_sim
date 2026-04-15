@@ -31,6 +31,20 @@ batter8 = Batter("Yordan Alvarez", 70, 30, 45, 80)
 batter9 = Batter("Michael Harris II", 95, 85, 85, 80)
 batter_lineup = [batter1, batter2, batter3, batter4, batter5, batter6, batter7, batter8, batter9]
 pitcher1 = Pitcher("Luke Sampson", 70, 70, 70)
+team1 = {"lineup": batter_lineup, "pitcher": pitcher1}
+
+away_batter1 = Batter("Jim Bob", 70, 85, 60, 80)
+away_batter2 = Batter("Slim Jim", 90, 70, 85, 50)
+away_batter3 = Batter("Blackbeard Joe", 70, 99, 30, 80)
+away_batter4 = Batter("Jim Crow", 70, 85, 60, 80)
+away_batter5 = Batter("Mommy Milk", 70, 85, 60, 80)
+away_batter6 = Batter("Walter White", 70, 85, 60, 80)
+away_batter7 = Batter("Tony Stark", 70, 85, 60, 80)
+away_batter8 = Batter("Crew Crawdad", 70, 85, 60, 80)
+away_batter9 = Batter("Coach Rac", 70, 85, 60, 80)
+away_batting_lineup = [away_batter1, away_batter2, away_batter3, away_batter4, away_batter5, away_batter6, away_batter7, away_batter8, away_batter9]
+away_pitcher1 = Pitcher("Nolan Ryan", 80, 60, 70)
+team2 = {"lineup":away_batting_lineup, "pitcher": away_pitcher1}
 
 def at_bat(pitcher, batter):
     """Simulates a single at-bat requiring one pitcher object and one batter object"""
@@ -191,3 +205,79 @@ def advance_runners(result, bases, batter, runs):
         first_base = batter
     new_bases = [first_base, second_base, third_base]
     return new_bases, runs
+
+def simulate_game(home, away):
+    i = 0 # home batter index
+    j = 0 # away batter index
+    game_being_played = True # flag that keeps game going
+    
+    home_lineup = home["lineup"]
+    home_pitcher = home["pitcher"]
+    away_lineup = away["lineup"]
+    away_pitcher = away["pitcher"]
+    
+    home_score = 0
+    home_strikeouts = 0
+    home_walks = 0
+    home_hits = 0
+    home_singles = 0
+    home_doubles = 0
+    home_hrs = 0
+    home_errors = 0
+    
+    away_score = 0
+    away_strikeouts = 0
+    away_walks = 0
+    away_hits = 0
+    away_singles = 0
+    away_doubles = 0
+    away_hrs = 0
+    away_errors = 0
+
+    innings = 0
+
+    while(game_being_played):
+        innings += 1
+        away_result = simulate_inning(home_pitcher, away_lineup, j)
+        away_score += away_result["runs"]
+        away_strikeouts += away_result["strikeouts"]
+        away_walks += away_result["walks"]
+        away_hits += away_result["hits"]
+        away_singles += away_result["singles"]
+        away_doubles += away_result["doubles"]
+        away_hrs += away_result["home_runs"]
+        home_errors += away_result["errors"]
+        j = away_result["next_batter_index"]
+
+        if(innings >= 9):
+            if(home_score > away_score):
+                game_being_played = False
+                break
+
+        home_result = simulate_inning(away_pitcher, home_lineup, i)
+        home_score += home_result["runs"]
+        home_strikeouts += home_result["strikeouts"]
+        home_walks += home_result["walks"]
+        home_hits += home_result["hits"]
+        home_singles += home_result["singles"]
+        home_doubles += home_result["doubles"]
+        home_hrs += home_result["home_runs"]
+        away_errors += home_result["errors"]
+        i = home_result["next_batter_index"]
+
+        if innings >= 9:
+            if home_score != away_score:
+                game_being_played = False
+                break
+    
+    who_won = ""
+    if home_score > away_score:
+        who_won = "Home Team"
+    elif home_score < away_score:
+        who_won = "Away Team"
+    print("The game is over in " + str(innings) + " innings with a score of " + str(home_score) + "-" + str(away_score) + " favoring the " + who_won + ".")
+    print("Home Team: Runs: " + str(home_score) + " Hits: " + str(home_hits) + " Errors: " + str(home_errors))
+    print("Away Team: Runs: "+ str(away_score) + " Hits: " + str(away_hits) + " Errors: " + str(away_errors))
+
+
+simulate_game(team1, team2)
